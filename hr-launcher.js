@@ -11,7 +11,7 @@
     launchButton.disabled=true;launchButton.innerHTML='<span class="hubLoader" aria-hidden="true"></span>Opening…';
     try{
       if(!task)task=new Promise((resolve,reject)=>{
-        const script=document.createElement('script');script.src='hr-hub.js?v=20261015-modern3';script.async=true;
+        const script=document.createElement('script');script.src='hr-hub.js?v=20261015-profiles4';script.async=true;
         script.onload=()=>resolve();script.onerror=()=>{task=null;script.remove();reject(Error('Unable to load employee records. Please try again.'));};
         document.body.appendChild(script);
       });

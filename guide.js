@@ -93,7 +93,7 @@ async function loadBranch(branch,offset=0,refresh=false){
 }
 function renderBranch(branch,d,view){
   $('adminContent').innerHTML=`<button class="backBranches" id="backToBranches">← Branches</button> <button class="backBranches" id="refreshBranch">Refresh records</button><h3>${esc(branch)}</h3><p>${d.total?`${d.offset+1}–${d.offset+d.records.length} of ${d.total}`:'No acknowledgments yet.'}</p><div class="employeeGallery">${d.records.map(r=>`<article class="employeeCard"><div class="pictureBox" data-picture="${esc(r.id)}"><span class="pictureStatus">Picture ready to load</span><img hidden decoding="async" alt="Acknowledgment of ${esc(r.name)}"></div><div><b>${esc(r.name)}</b><br><small>${esc(r.employeeId)} · ${esc(r.date)}</small><br><button class="viewFull" data-full="${esc(r.id)}">VIEW FULL</button> <button data-delete="${esc(r.id)}">REMOVE</button></div></article>`).join('')}</div><p><button class="backBranches" id="prevPage" ${d.offset===0?'disabled':''}>Previous</button> <button class="backBranches" id="nextPage" ${!d.hasMore?'disabled':''}>Next</button></p>`;
-  window.dispatchEvent(new CustomEvent('varda-branch-rendered',{detail:{token:adminToken,records:d.records,container:$('adminContent').querySelector('.employeeGallery')}}));
+  window.dispatchEvent(new CustomEvent('varda-branch-rendered',{detail:{token:adminToken,records:d.records,branch,container:$('adminContent').querySelector('.employeeGallery')}}));
   $('backToBranches').onclick=()=>showBranches();$('refreshBranch').onclick=()=>loadBranch(branch,0,true);
   $('prevPage').onclick=()=>loadBranch(branch,Math.max(0,d.offset-24));$('nextPage').onclick=()=>loadBranch(branch,d.offset+24);
   let active=0;const queue=[];
