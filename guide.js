@@ -81,6 +81,7 @@ const busyText=text=>'<span class="vardaSpinner" aria-hidden="true"></span>'+esc
 function showBranches(c){
   adminView++;if(imageObserver)imageObserver.disconnect();if(c)branchCounts={...c};
   $('adminContent').innerHTML=`<p>Select a branch. <button class="backBranches" id="refreshCounts">Refresh counts</button><span id="countsStatus" role="status"></span></p>${adminBranchGroups.map(group=>`<section class="branchGroup"><h3>${esc(group.region)}</h3><div class="branchTiles">${group.items.map(branch=>`<button class="branchTile" data-branch="${esc(branch)}">${esc(branch)}<span>${branchCounts[branch]===undefined?'View acknowledgments':branchCounts[branch]+' acknowledged'}</span></button>`).join('')}</div></section>`).join('')}`;
+  const hubButton=document.createElement('button');hubButton.className='backBranches';hubButton.textContent='HR DASHBOARD';hubButton.onclick=()=>window.VardaHrHub?.open(adminToken);$('adminContent').prepend(hubButton);
   $('adminContent').querySelectorAll('[data-branch]').forEach(b=>b.onclick=()=>loadBranch(b.dataset.branch));
   $('refreshCounts').onclick=async()=>{const view=adminView,b=$('refreshCounts');b.disabled=true;$('countsStatus').innerHTML=busyText('Updating counts…');try{const d=await api({action:'branches',token:adminToken});branchCounts={...d.branches};if(view===adminView)showBranches()}catch(x){if(view===adminView)$('countsStatus').textContent=x.message}finally{b.disabled=false}};
 }
@@ -92,6 +93,7 @@ async function loadBranch(branch,offset=0,refresh=false){
 }
 function renderBranch(branch,d,view){
   $('adminContent').innerHTML=`<button class="backBranches" id="backToBranches">← Branches</button> <button class="backBranches" id="refreshBranch">Refresh records</button><h3>${esc(branch)}</h3><p>${d.total?`${d.offset+1}–${d.offset+d.records.length} of ${d.total}`:'No acknowledgments yet.'}</p><div class="employeeGallery">${d.records.map(r=>`<article class="employeeCard"><div class="pictureBox" data-picture="${esc(r.id)}"><span class="pictureStatus">Picture ready to load</span><img hidden decoding="async" alt="Acknowledgment of ${esc(r.name)}"></div><div><b>${esc(r.name)}</b><br><small>${esc(r.employeeId)} · ${esc(r.date)}</small><br><button class="viewFull" data-full="${esc(r.id)}">VIEW FULL</button> <button data-delete="${esc(r.id)}">REMOVE</button></div></article>`).join('')}</div><p><button class="backBranches" id="prevPage" ${d.offset===0?'disabled':''}>Previous</button> <button class="backBranches" id="nextPage" ${!d.hasMore?'disabled':''}>Next</button></p>`;
+  window.dispatchEvent(new CustomEvent('varda-branch-rendered',{detail:{token:adminToken,records:d.records,container:$('adminContent').querySelector('.employeeGallery')}}));
   $('backToBranches').onclick=()=>showBranches();$('refreshBranch').onclick=()=>loadBranch(branch,0,true);
   $('prevPage').onclick=()=>loadBranch(branch,Math.max(0,d.offset-24));$('nextPage').onclick=()=>loadBranch(branch,d.offset+24);
   let active=0;const queue=[];
@@ -108,6 +110,7 @@ function closeViewer(){$('imageViewer').classList.remove('open');$('viewerImage'
 $('viewerClose').onclick=closeViewer;$('imageViewer').onclick=e=>{if(e.target===$('imageViewer'))closeViewer()};
 async function removeRecord(id,branch,button){if(!confirm('Are you sure you want to remove this record?'))return;const view=adminView;button.disabled=true;button.innerHTML=busyText('Removing…');try{await api({action:'delete',token:adminToken,id});for(const key of branchPages.keys())if(key.startsWith(branch+'|'))branchPages.delete(key);imageCache.delete(id+'|full');imageCache.delete(id+'|thumbnail');if(view===adminView)await loadBranch(branch,0,true)}catch(x){alert(x.message);button.disabled=false;button.textContent='REMOVE'}}
 window.VardaPolicyApi=api;
+window.VardaPolicyBranches=[...branches];
 let policyRevision='';
 window.VardaPolicySetReady=(ready,rows=[])=>{policiesReady=ready;if(ready){const revision=rows.map(x=>x.code+':'+x.createdAt).join('|');if(revision!==policyRevision){policyComplete=false;guideComplete=false;policyRevision=revision}VERSION=revision?'Varda Policy Matrix 2026 · '+rows[rows.length-1].code+' · '+rows[rows.length-1].createdAt:'Varda Policy Matrix 2026 · ACT-001–086'}updateGate();if(!ready){$('submitAck').textContent='LOADING POLICIES…';$('readHint').textContent='Please wait for the complete policy library to load.'}};
 
