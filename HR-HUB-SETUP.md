@@ -4,7 +4,7 @@ Adds a simple HR dashboard, employee profiles, record tiles, and approved point 
 
 ## Activation status
 
-The private Apps Script add-on must be installed and verified before merging this change into `main`. The current public website remains unchanged until then.
+Activated on October 15, 2026. The connected Apps Script deployment is Version 6; the frontend is published from main. Private storage initialization passed with 100 starting points and PRIVATE visibility. The policy library loaded successfully after deployment. HR dashboard authentication and employee import verification remain pending until the administrator signs in. The numbered steps below describe the installation procedure for future maintenance; do not repeat them on the already activated deployment.
 
 1. In the currently connected Apps Script project, verify that the original administrator login caches sessions under `admin_` + token. The add-on deliberately accepts only that administrator session, not a policy-editor session.
 2. Make a copy of the current project source. Rename its existing `doPost` function to `policyDoPost`. Keep all other functions, settings, and credentials unchanged.
@@ -38,4 +38,4 @@ The private backend stores a small-team JSON index under the existing restricted
 
 JavaScript syntax checks and backend fixture tests cover invalid sessions, legacy routing, duplicate imports, conflicting employee identities, pending and approved scores, approval requirements, duplicate retries, reversals, merits, declined cases, attachment signatures, dates, and file ownership.
 
-Live deployment, actual Apps Script authorization, and browser layout verification remain pending. The private add-on has not been installed in the active deployment.
+Actual Apps Script initialization and deployment succeeded. The published frontend contains the new HR entry, and policy synchronization succeeds. Authenticated dashboard/profile layout, employee import, upload/download, and approval verification remain pending. No real employee assessments have been created.
